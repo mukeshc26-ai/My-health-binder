@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Health Binder</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#0b5ed7">
+</head>
+<body>
+<div id="lockScreen" class="lock hidden">
+  <div class="lock-card">
+    <h2 id="lockTitle">Enter Passcode</h2>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="6" placeholder="6-digit PIN">
+    <div class="row">
+      <button id="unlockBtn">Unlock</button>
+      <button id="setupBtn" class="secondary">Setup/Change PIN</button>
+    </div>
+    <p id="lockMsg"></p>
+  </div>
+</div>
+
+<header>
+  <h1>My Health Binder</h1>
+  <nav>
+    <a href="#insights">Insights</a>
+    <a href="#checkin">Check‑In</a>
+    <a href="#meds">Meds</a>
+    <a href="#workout">Workout</a>
+    <a href="#metrics">Metrics</a>
+    <a href="#charts">Charts</a>
+    <a href="#files">Files</a>
+    <a href="#reminders">Reminders</a>
+  </nav>
+  <button id="installBtn" class="secondary">Install</button>
+</header>
+
+<main>
+  <section class="card" id="insights">
+    <h2>Daily Insights</h2>
+    <p>Import your vitals/sleep CSV (from Mi Fitness or your tracker) in Metrics → then come back here.</p>
+    <div id="insightCards" class="grid"></div>
+    <button id="refreshInsights" class="secondary">Refresh Insights</button>
+  </section>
+
+  <section class="card" id="checkin">
+    <h2>Quick Check‑In</h2>
+    <form id="checkinForm">
+      <label>Energy (1–10)<input type="number" id="energy" min="1" max="10" required></label>
+      <label>Symptoms / Pain / RLS<input type="text" id="symptoms" placeholder="e.g., mild back pain, fatigue"></label>
+      <label>Exercise Done?<select id="exercise"><option value="Yes">Yes</option><option value="No">No</option></select></label>
+      <label>Notes<textarea id="notes" rows="3" placeholder="anything else..."></textarea></label>
+      <button type="submit">Save Check‑In</button>
+    </form>
+    <div class="row">
+      <button id="exportData" class="secondary">Export Check‑Ins (JSON)</button>
+      <button id="exportCSV" class="secondary">Export Check‑Ins (CSV)</button>
+      <label class="filelabel">Import Data (JSON)<input type="file" id="importData" accept="application/json"></label>
+      <button id="clearData" class="danger">Clear Check‑Ins</button>
+    </div>
+    <p id="lastReminder"></p>
+    <table id="history">
+      <thead><tr><th>Date/Time</th><th>Energy</th><th>Exercise</th><th>Symptoms</th><th>Notes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="card" id="meds">
+    <h2>Medicines Checklist</h2>
+    <div class="grid2">
+      <div>
+        <h3>Today</h3>
+        <div id="medChecklist"></div>
+        <button id="saveMeds">Save Today’s Doses</button>
+        <p id="adherenceMsg"></p>
+      </div>
+      <div>
+        <h3>Manage Medicines</h3>
+        <form id="medForm">
+          <label>Medicine name<input type="text" id="medName" placeholder="e.g., Uprise D3 60k IU"></label>
+          <label>Dose & time note<input type="text" id="medDose" placeholder="e.g., Weekly (Sun), after lunch"></label>
+          <button type="submit">Add Medicine</button>
+        </form>
+        <ul id="medList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="workout">
+    <h2>Workout Checklist</h2>
+    <div class="streak"><span>🔥 BetterMe Streak:</span> <strong id="streakCount">0</strong> days</div>
+    <form id="workoutForm">
+      <div class="checkbox"><input type="checkbox" id="wm_betterme"><label for="wm_betterme">BetterMe workout completed</label></div>
+      <div class="checkbox"><input type="checkbox" id="wm_strength"><label for="wm_strength">Strength session</label></div>
+      <div class="checkbox"><input type="checkbox" id="wm_mobility"><label for="wm_mobility">Mobility/Stretching (10–15 min)</label></div>
+      <div class="checkbox"><input type="checkbox" id="wm_cardio"><label for="wm_cardio">Cardio (walk/cycle/swim)</label></div>
+      <label>Steps (optional)<input type="number" id="wm_steps" min="0" placeholder="e.g., 6000"></label>
+      <label>Calories burned (optional)<input type="number" id="wm_cal" min="0" placeholder="e.g., 350"></label>
+      <label>Notes<textarea id="wm_notes" rows="2" placeholder="add any workout notes..."></textarea></label>
+      <button type="submit">Save Workout</button>
+    </form>
+    <div class="row">
+      <button id="exportWorkout" class="secondary">Export Workouts (CSV)</button>
+      <label class="filelabel">Import Workouts (JSON)<input type="file" id="importWorkout" accept="application/json"></label>
+      <button id="clearWorkout" class="danger">Clear Workouts</button>
+    </div>
+    <table id="workoutHistory">
+      <thead><tr><th>Date</th><th>BetterMe</th><th>Strength</th><th>Mobility</th><th>Cardio</th><th>Steps</th><th>Calories</th><th>Notes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="card" id="metrics">
+    <h2>Weight, Vitals & Sleep</h2>
+    <div class="grid2">
+      <div>
+        <h3>Quick Entry</h3>
+        <form id="metricForm">
+          <label>Weight (kg)<input type="number" id="mt_weight" step="0.1"></label>
+          <label>Resting HR (bpm)<input type="number" id="mt_rhr" step="1"></label>
+          <label>SpO₂ (%)<input type="number" id="mt_spo2" step="1"></label>
+          <label>HRV (ms)<input type="number" id="mt_hrv" step="1"></label>
+          <label>BP (systolic/diastolic)<input type="text" id="mt_bp" placeholder="e.g., 118/76"></label>
+          <label>Sleep minutes<input type="number" id="mt_sleep" step="1" placeholder="e.g., 420"></label>
+          <button type="submit">Save Entry</button>
+        </form>
+        <div class="row">
+          <button id="exportMetrics" class="secondary">Export Metrics (CSV)</button>
+          <label class="filelabel">Import Metrics (CSV/JSON)<input type="file" id="importMetrics" accept=".csv,application/json"></label>
+          <button id="downloadTemplate" class="secondary">Download CSV Template</button>
+        </div>
+      </div>
+      <div>
+        <h3>Recent Metrics</h3>
+        <table id="metricHistory">
+          <thead><tr><th>Date/Time</th><th>Wt(kg)</th><th>RHR</th><th>SpO₂</th><th>HRV</th><th>BP</th><th>Sleep(min)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="charts">
+    <h2>Progress Charts</h2>
+    <div class="chart-card">
+      <h3>Energy (last 30 check‑ins)</h3>
+      <canvas id="energyChart" width="900" height="250"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Weekly Summary (workouts, steps, calories)</h3>
+      <canvas id="weeklyChart" width="900" height="250"></canvas>
+    </div>
+  </section>
+
+  <section class="card" id="files">
+    <h2>Upload Prescriptions & Blood Reports</h2>
+    <p>Files are kept safely on your device (IndexedDB). Nothing leaves your phone/computer.</p>
+    <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.heic,.webp" />
+    <div class="row">
+      <button id="saveFiles">Save to App</button>
+      <button id="exportFiles" class="secondary">Export All Files</button>
+    </div>
+    <ul id="fileList"></ul>
+  </section>
+
+  <section class="card" id="reminders">
+    <h2>Reminders</h2>
+    <p>The app will nudge you every 10 hours while active. Allow notifications. For background alerts, add the .ics to your Calendar.</p>
+    <div class="row">
+      <button id="enableNotif">Enable Notifications</button>
+      <button id="testNotif" class="secondary">Test Notification</button>
+      <a id="icsLink" class="secondary" download="10hr-reminder.ics">Download 10‑hour Calendar Reminder (.ics)</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <small>© 2025 My Health Binder • PWA v4</small>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
